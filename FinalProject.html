@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Online Store</title>
+    <style>
+        html {
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        table:nth-of-type(even) {
+            background-color: rgb(89, 88, 88);
+        }
+
+        #gridView {
+            display: none;
+        }
+
+        #itemView {
+            display: none;
+        }
+
+        nav {
+            background-color: rgb(198, 197, 197);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+        }
+
+        #loadingNav {
+            background-color: rgb(102, 213, 102);
+            text-align: center;
+            border-radius: 10px;
+            width: fit-content;
+            padding: 10px;
+            font-weight: bold;
+        }
+
+        table {
+            color: rgb(0, 0, 0);
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        thead {
+            border-bottom: 3px rgb(177, 177, 177) solid;
+        }
+
+        #chooseFilter {
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .item_image img {
+            width: 350px;
+            height: auto;
+        }
+
+        #loading {
+            background-color: rgb(102, 213, 102);
+            text-align: center;
+            margin: 15px auto;
+            border-radius: 10px;
+            width: fit-content;
+            padding: 10px;
+            font-weight: bold;
+            display: none;
+        }
+
+        .thumbnail {
+            width: 10%;
+        }
+
+        #gallery_main {
+            display: block;
+            width: 100%;
+        }
+
+        #gallery {
+            width: 50%;
+        }
+
+        #itemTitle {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;
+            font-size: large;
+            border-bottom: solid black 5px;
+            margin-bottom: 15px;
+        }
+
+        div#itemView {
+            display: none;
+        }
+
+        div#gallery {
+            float: left;
+            margin-right: 15px;
+            max-width: 500px;
+        }
+
+        img.thumbnail {
+            margin: 10px 8px;
+        }
+
+        thumbnail:first-of-type {
+            padding-right: 0;
+            background: red;
+        }
+
+        #gallery_main+.thumbnail {
+            margin-left: 0;
+        }
+
+        img.thumbnail.selected {
+            border: solid grey;
+        }
+
+        table#options {
+            display: inline;
+        }
+
+        #options label {
+            font-weight: bold;
+        }
+
+        #options td {
+            padding: 7px 7px;
+        }
+
+        tr>td {
+            text-align: right;
+        }
+
+        #options select {
+            width: 100%;
+            padding: 7px;
+        }
+
+        div#buy-now {
+            background: black;
+            color: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-left: 30px;
+        }
+
+        #close {
+            float: right;
+            clear: both;
+            margin-bottom: 10px;
+        }
+
+        #items th,
+        #items td {
+            padding: 0px 11px;
+        }
+
+        .item_brief {
+            text-align: left;
+        }
+
+        #items tr:nth-of-type(even) {
+            background: lightgray;
+        }
+
+        td#initialTabMessage {
+            text-align: center;
+        }
+
+        nav#categories {
+            padding: 5px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="json_data.js"></script>
+    <header>
+        <h1>The Online Store</h1>
+        <nav id="categories">
+            <span id="loadingNav">Loading Categories...</span>
+        </nav>
+    </header>
+    <main>
+        <!--brewer says to make a loop using json to get the information-->
+        <table id="items">
+            <thead>
+                <tr>
+                    <th colspan="2" id="tableItem">Item</th>
+                    <th id="description">Description</th>
+                    <th id="price">Price</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+        <div id="loading">Loading...</div>
+        <p id="chooseFilter">Choose a filter category above.</p>
+
+        <!-- grid view-->
+        <div id="gridView">
+            This is gridView
+        </div>
+
+        <!-- Item View-->
+        <div id="itemView">
+            <div id="close"><button onclick="hideItems()">X</button></div>
+            <div id="itemTitle">
+                <span id="itemView_item">Loading...</span>
+                <span id="itemView_price">$0</span>
+            </div>
+
+            <div id="gallery"></div>
+            <span id="itemView_description">
+                <p>Placeholder description</p>
+            </span>
+
+            <table id="options">
+                <tr>
+                    <td>
+                        <label for="size">Size</label>
+                    </td>
+                    <td>
+                        <select class="option" id="size">
+                            <option disabled selected>Choose your size</option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="color">Color</label>
+                    </td>
+                    <td>
+                        <select class="option" id="color">
+                            <option disabled selected>Choose your color</option>
+                        </select>
+                    </td>
+                    <td>
+                        <div id="buy-now">Buy Now!</div>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="quantity">Quantity</label>
+                    </td>
+                    <td>
+                        <select class="option" id="quantity">
+                            <option disabled selected>Choose your quantity</option>
+                        </select>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </main>
+    <footer>
+
+    </footer>
+    <script>
+        const api_url = "https://6245f389e3450d61b0f926c1.mockapi.io/api/v1/"
+
+        async function getApiData(url) {
+            const connection = await fetch(url);
+            return connection.json();
+        }
+
+        async function loadCategories() {
+            try {
+                const results = await getApiData(api_url + "categories");
+                // console.log(results);
+                let html = '<span>Filter: </span>' //make sure that the labeling is the same as the html
+
+                results.forEach((item) => {
+                    const htmlSegment = `<label><input type="radio" name="category" onclick="loadItems(${item.id});">${item.name}</label>`
+                    html += htmlSegment;
+                });
+
+                const categoryContainer = document.querySelector('nav');
+                categoryContainer.innerHTML = html;
+            }
+            catch (error) {
+                console.log(error);
+            }
+
+        }
+
+        async function loadItems(category) {
+            try {
+                document.querySelector("#chooseFilter").style.display = "none";
+                showLoader();
+                let results = await getApiData(api_url + "categories/" + category + "/items");
+                if (results) {
+                    hideLoader();
+                }
+                let html = '';
+                let totalItems = results['totalCount'];
+                // console.log(totalItems, {results});
+                if (totalItems > 0) {
+                    let tableHeadings = `<thead><tr>
+                                            <th></th>
+                                            <th>Item</th>
+                                            <th>Description</th>
+                                            <th>Price</th>
+                                        </tr></thead>`
+                    html += tableHeadings;
+                    results.items.forEach(item => {
+                        let primaryImage = item.image[0];
+                        let htmlSegment = `<tr onclick="showItem(${category}, '${item.itemId}')">
+                                                <td class="item_image">
+                                                    <img src="${primaryImage}">
+                                                </td>
+                                                <td class="item_name">${item.itemName}</td>
+                                                <td class="item_brief">${item.itemBrief}</td>
+                                                <td class="item_price">$${item.price}</td>
+                                            </tr>`
+                        html += htmlSegment;
+                        // console.log(html);
+                    })
+                } else {
+                    html = `<tr><td id="initialTabMessage" colspan="4"> There are no items in this category.</td></tr>`;
+                }
+                const categoryContainer = document.querySelector('#items');
+                categoryContainer.innerHTML = html;
+            } catch (error) {
+                console.log(error);
+            }
+        }
+        //fix html so this can run
+        async function showItem(category, id) {
+            try {
+                console.log("category:" + category + ":itemId" + id);
+                const categories = document.querySelector("#categories");
+                const listView = document.querySelector("#items");
+                const chooseFilter = document.querySelector("#chooseFilter")
+                const itemView = document.querySelector("#itemView");
+                const itemTitle = document.querySelector("#itemView_item");
+                const itemDescription = document.querySelector("#itemView_description");
+                const itemSize = document.querySelector("#size");
+                const itemColor = document.querySelector("#color");
+                const itemQuantity = document.querySelector("#quantity");
+                const gallery = document.querySelector("#gallery");
+                const price = document.querySelector("#itemView_price")
+
+                categories.style.display = "none";
+                chooseFilter.style.display = "none";
+                listView.style.display = "none";
+                itemView.style.display = "block";
+                showLoader();
+
+                const results = await getApiData(api_url + "categories/" + category + "/items/" + id);
+                console.log({ apiUrl: api_url + "categories/" + category + "/items/" + id });
+
+                if (results) {
+                    hideLoader();
+                }
+                itemTitle.textContent = results.itemName;
+                itemDescription.innerHTML = `<p>${results.itemBrief}</p>`;
+                price.textContent = `$${results.price}`;
+
+                results.size.forEach((size) => {
+                    const option = document.createElement("option");
+                    option.text = size;
+                    option.value = size;
+                    itemSize.appendChild(option);
+                })
+
+                results.colors.forEach((color) => {
+                    const option = document.createElement("option");
+                    option.text = color;
+                    option.value = color;
+                    itemColor.appendChild(option);
+                })
+
+                for (let quantity = 1; quantity <= 10; quantity++) {
+                    const option = document.createElement("option");
+                    option.text = quantity;
+                    option.value = quantity;
+                    itemQuantity.appendChild(option);
+                }
+                //Add images to gallery
+                results.image.forEach((image, index) => {
+                    const thumbnail = document.createElement("img");
+                    thumbnail.src = image;
+                    thumbnail.setAttribute("onclick", `changeImage(event,"${image}")`);
+
+                    if (index === 0) { //if this is the first image in the array
+                        const mainImg = document.createElement("img");
+                        mainImg.src = image;
+                        gallery.appendChild(mainImg).id = "gallery_main";
+
+                        gallery.appendChild(thumbnail).className = "thumbnail selected";
+
+                    } else { //add remaining images
+                        gallery.appendChild(thumbnail).className = "thumbnail";
+                    }
+                });
+            } catch (error) {
+                console.log(error);
+            }
+        }
+
+        function changeImage(e, url) {
+            const selectedTumbnail = document.querySelector(".thumbnail.selected");
+
+            if (selectedTumbnail) {
+                selectedTumbnail.classList.remove("selected");
+            }
+
+            e.target.classList.add("selected");
+
+            document.querySelector("#gallery_main").src = url;
+        }
+
+        function hideItems() {
+            const categories = document.querySelector("#categories");
+            const listView = document.querySelector("#items");
+            const itemView = document.querySelector("#itemView");
+            categories.style.display = "flex";
+            listView.style.display = "table";
+            itemView.style.display = "none";
+
+            // avoid duplication of item information
+            document.querySelector("#gallery").innerHTML = "";
+
+            ["quantity", "size", "color"].forEach(id => { // clear all options menus
+                const ele = document.getElementById(id);
+                Array.from(ele.childNodes)
+                    .forEach(function (ele) {
+                        if (!ele.disabled)
+                            ele.parentElement.removeChild(ele);
+                    });
+                ele.childNodes[0].selected = true;
+            });
+        }
+
+
+        function showLoader() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoader() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        loadCategories();
+
+    </script>
+</body>
+
+</html>
